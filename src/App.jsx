@@ -1,56 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
- 
-function App() {
-  const [count, setCount] = useState(0)
-  const [a, setA] = useState(9)
-  const [vat, setVAT] = useState(0)
-  // 1. Add a variable b,
-  // 2. Add a button to increase b
-  // 3. on click "Increase B" button,
-  // Use value of count and a, b = count + a
- 
-  function addA() {
-    setA(a + 1)
-    console.log(a)
-  }
- 
-  const addB = () => {
-    setVAT(count + a)
-  }
- 
-  const handler = (e) => {
-    const price = e.target.value
-    console.log(price)
-    setA(price)
-    let v = price * 0.07
-    setVAT(Math.round(v * 100) / 100)
-  }
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
 
- 
- 
+const VAT = 0.07;
+
+function App() {
+  const [price, setPrice] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [vat, setVAT] = useState(0);
+  const [grossPrice, setGrossPrice] = useState(0);
+
+  const handlerPriceChange = (e) => {
+    const newPrice =
+      e.target.value != "" ? parseFloat(e.target.value) : e.target.value;
+    setPrice(newPrice);
+    calculateGrossPrice(newPrice, discount);
+  };
+
+  const handlerDiscountChange = (e) => {
+    const newDiscount =
+      e.target.value != "" ? parseFloat(e.target.value) : e.target.value;
+    setDiscount(newDiscount);
+    calculateGrossPrice(price, newDiscount);
+  };
+
+  const calculateGrossPrice = (newPrice, newDiscount) => {
+    const totalVAT = (newPrice - newDiscount) * VAT;
+    setVAT(totalVAT.toFixed(2));
+    setGrossPrice(newPrice - newDiscount + totalVAT);
+  };
+
   return (
     <>
-    <input type="number" value={a}
-      style={ {fontSize: '30pt'} }
-      onChange={handler}/>
- 
-      <h1>Gross Price = {a}</h1>
-      <h1>VAT = {vat}</h1>
-      <div className="card">
-        
- 
-        <button onClick={addA}>Increase A</button>
-        <button onClick={addB}>Increase B</button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div>
+        <label style={{ fontSize: "30pt" }} htmlFor="price">
+          Price:{" "}
+        </label>
+        <input
+          type="number"
+          name="price"
+          value={price}
+          style={{ fontSize: "30pt" }}
+          onChange={handlerPriceChange}
+        />
       </div>
- 
+      <div>
+        <label style={{ fontSize: "30pt" }} htmlFor="discount">
+          Discount:{" "}
+        </label>
+        <input
+          type="number"
+          name="discount"
+          value={discount}
+          style={{ fontSize: "30pt" }}
+          onChange={handlerDiscountChange}
+        />
+      </div>
+
+      <h1>Gross Price = {grossPrice}</h1>
+      <h1>VAT = {vat}</h1>
     </>
-  )
+  );
 }
- 
-export default App
+
+export default App;
